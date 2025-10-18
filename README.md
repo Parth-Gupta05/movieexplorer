@@ -1,34 +1,128 @@
-# Dark Light Mode In Next.JS 15 and Tailwind 4.1
+# 🎬 Movie Explorer
 
-A fully custom, dependency-free solution for adding light/dark mode to your Next.js 15 + Tailwind CSS 4.1 projects.  
-**No `next-themes`, no ShadCN UI, no extra packages** — just clean, SSR-friendly code with client-side theme persistence and zero flicker.
+A sleek and responsive movie discovery app built with **Next.js 15**, **TailwindCSS 4**, and **The Movie Database (TMDB) API**.  
+Browse trending movies, search your favorites, and manage personalized watchlists — all with a seamless light/dark theme experience.
 
-## 🧐 Why This Exists
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Parth--Gupta05%2Fmovieexplorer-blue?logo=github)](https://github.com/Parth-Gupta05/movieexplorer)
 
-Often, common solutions rely on external packages like `next-themes`, ShadCN UI, or other UI frameworks. While convenient, they can introduce:
+---
 
-- **SSR hydration mismatches** and flickering (FOUC)
-- **Extra dependencies**, increasing bundle size
-- Hidden complexity, especially with new Next.js 15 features
+## 🚀 Features
 
-This project gives you a **lightweight, fully custom alternative** that:
+✅ **Modern Stack**
+- Built using **Next.js 15 (App Router)**  
+- Styled with **Tailwind CSS v4.1**  
+- Smooth animations using **Framer Motion**
 
-- Completely avoids external dependencies  
-- Works seamlessly with Next.js 15's App Router (using `app/`)  
-- Uses SSR-friendly persistence (cookies or inline head scripts)  
-- Ensures no flicker on load or theme toggle
+✅ **User Features**
+- 🔍 Search for movies using TMDB API  
+- ♾️ Infinite scroll for popular movies  
+- ❤️ Add/remove movies to your favorites (persisted in `localStorage`)  
+- 🔒 Simple authentication using localStorage (register/login/logout)  
+- 🌓 Fully functional **Dark/Light/System** theme toggle with SSR-safe setup  
+- ⚡ Responsive, fast, and mobile-friendly UI  
 
-## ✨ Features
+✅ **Developer Goodies**
+- Local storage–based session management  
+- Custom hooks & context for theme and auth  
+- TypeScript + Modular components  
+- Toast notifications (using `react-toastify`)  
 
-- **Pure implementation** — no `next-themes`, no ShadCN, no UI libs
-- **SSR-safe** — initial theme is rendered correctly, avoiding mismatch
-- **Persistent theme** — saves user preference via `localStorage`
-- **Zero flicker** — inline theme detection applied before hydration
-- **Clean and minimal** — easy to understand and extend
-- **No Tailwind Config Needed** — Works without editing tailwind.config.js.
+---
 
-## 🛠 Developer
+## 🧩 Tech Stack
 
-[![GitHub](https://img.shields.io/badge/GitHub-thesakshijaiswal-181717?style=for-the-badge&logo=github)](https://github.com/thesakshijaiswal)
+| Tool | Purpose |
+|------|----------|
+| **Next.js 15** | Framework for SSR/SSG React apps |
+| **Tailwind CSS 4.1** | Utility-first styling |
+| **TypeScript** | Type-safe React development |
+| **Framer Motion** | UI animations |
+| **React Toastify** | Toast notifications |
+| **TMDB API** | Movie data source |
 
-``If this repo helped you, please consider giving it a ⭐``
+---
+
+## ⚙️ Setup Instructions
+
+### 1️⃣ Clone the repository
+```bash
+git clone https://github.com/Parth-Gupta05/movieexplorer.git
+cd movieexplorer
+```
+2️⃣ Install dependencies
+```
+npm install
+```
+# or
+```
+yarn install
+```
+3️⃣ Setup environment variables
+Create a .env.local file in the project root and add your TMDB API key:
+
+```
+NEXT_PUBLIC_TMDB_API_KEY=your_tmdb_api_key_here
+```
+You can get an API key by creating a free account on The Movie Database (TMDB).
+
+4️⃣ Run the development server
+```
+npm run dev
+```
+# or
+```
+yarn dev
+```
+Then open 👉 http://localhost:3000
+
+🧠 Project Structure
+```
+movieexplorer/
+├── app/
+│   ├── page.tsx
+│   ├── favorites/
+│   ├── movies/
+│   └── auth/
+├── components/
+│   ├── Navbar.tsx
+│   ├── ThemeToggle.tsx
+│   └── MovieCard.tsx
+├── contexts/
+│   ├── ThemeContext.tsx
+│   └── UserContext.tsx
+├── lib/
+│   └── tmdb.ts
+├── public/
+├── styles/
+│   └── globals.css
+├── .env.local
+├── package.json
+└── README.md
+```
+
+🌙 Theme System
+The app supports Light, Dark, and System themes.
+
+🔐 Authentication System
+A minimal, dependency-free local authentication:
+
+Users can register and login using email/password.
+
+Credentials are stored locally (in localStorage).
+
+Favorites are user-specific and sync with the logged-in account.
+
+🧾 License
+This project is licensed under the MIT License — free to use and modify.
+
+💡 Inspiration
+This project was inspired by building a fully client-side, API-driven movie explorer that combines modern UI principles with Next.js 15’s app directory and Tailwind 4’s simplicity.
+
+🧑‍💻 Author
+Parth Gupta
+
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Parth--Gupta05%2Fmovieexplorer-blue?logo=github)](https://github.com/Parth-Gupta05/movieexplorer)
+
+Live link: 
+[Check out the live app here](https://movieexplorer-m4be.vercel.app/auth/login)
