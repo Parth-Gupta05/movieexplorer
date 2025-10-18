@@ -3,6 +3,10 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import MovieCard from './MovieCard'
 import { fetchPopular, searchMovies } from '../lib/tmdb'
 
+interface MoviesListProps {
+  searchQuery: string
+}
+
 // Skeleton while loading
 const MovieGridSkeleton = () => (
   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
@@ -12,45 +16,61 @@ const MovieGridSkeleton = () => (
   </div>
 )
 
-export default function MoviesList() {
+export default function MoviesList({ searchQuery }: MoviesListProps) {
   const [movies, setMovies] = useState<any[]>([])
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
-  const [query, setQuery] = useState('')
-  const [isSearching, setIsSearching] = useState(false)
+  const [lastQuery, setLastQuery] = useState('')
   const loaderRef = useRef<HTMLDivElement>(null)
 
-  // ✅ Fetch movies (either popular or search results)
-  const loadMovies = useCallback(async () => {
-    if (loading || !hasMore) return
-    setLoading(true)
+  const loadMovies = useCallback(
+    async (reset = false) => {
+      if (loading || !hasMore) return
+      setLoading(true)
 
-    try {
-      const data = isSearching
-        ? await searchMovies(query)
-        : await fetchPopular(page)
-      const newMovies = data.results || []
+      try {
+        const currentPage = reset ? 1 : page
+        const data = searchQuery
+          ? await searchMovies(searchQuery)
+          : await fetchPopular(currentPage)
 
-      if (newMovies.length === 0 || (!isSearching && page >= data.total_pages)) {
-        setHasMore(false)
-      } else {
+        const newMovies = data.results || []
+
+        if (reset) setMovies([]) // Clear only after fetching new results
+
         setMovies(prev =>
-          isSearching || page === 1 ? newMovies : [...prev, ...newMovies]
+          reset || searchQuery ? newMovies : [...prev, ...newMovies]
         )
-        if (!isSearching) setPage(prev => prev + 1)
-      }
-    } catch (err) {
-      console.error('❌ Failed to fetch movies:', err)
-      setHasMore(false)
-    } finally {
-      setLoading(false)
-    }
-  }, [loading, hasMore, page, query, isSearching])
 
-  // ✅ Infinite scroll (only for popular movies)
+        if (!searchQuery) setPage(prev => prev + 1)
+
+        if (newMovies.length === 0 || (!searchQuery && currentPage >= data.total_pages)) {
+          setHasMore(false)
+        } else {
+          setHasMore(true)
+        }
+      } catch (err) {
+        console.error('❌ Failed to fetch movies:', err)
+        setHasMore(false)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [loading, hasMore, page, searchQuery]
+  )
+
+  // ✅ Load movies on mount or when searchQuery changes
   useEffect(() => {
-    if (!loaderRef.current || isSearching) return
+    if (searchQuery !== lastQuery) {
+      setLastQuery(searchQuery)
+      loadMovies(true) // Reset only after new results fetched
+    }
+  }, [searchQuery, lastQuery, loadMovies])
+
+  // ✅ Infinite scroll for popular movies
+  useEffect(() => {
+    if (!loaderRef.current || searchQuery) return
 
     const observer = new IntersectionObserver(
       entries => {
@@ -61,73 +81,19 @@ export default function MoviesList() {
 
     observer.observe(loaderRef.current)
     return () => observer.disconnect()
-  }, [loading, hasMore, loadMovies, isSearching])
-
-  // ✅ Load movies on initial render or when switching modes
-  useEffect(() => {
-    setMovies([])
-    setPage(1)
-    setHasMore(true)
-    loadMovies()
-  }, [isSearching])
-
-  // ✅ Handle search
-  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (!query.trim()) return
-    setIsSearching(true)
-    setMovies([])
-    await loadMovies()
-  }
-
-  const handleClearSearch = () => {
-    setQuery('')
-    setIsSearching(false)
-    setMovies([])
-    setPage(1)
-    setHasMore(true)
-  }
+  }, [loading, hasMore, loadMovies, searchQuery])
 
   return (
     <section className="relative">
-      {/* 🔍 Sticky Search Bar */}
-      <div className="sticky top-0 z-20 backdrop-blur-md border-b border-slate-800 px-4 py-4">
-        <form onSubmit={handleSearch} className="flex gap-2 max-w-2xl mx-auto">
-          <input
-            type="text"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder="Search movies..."
-            className="flex-1 border border-slate-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-800 text-white placeholder-slate-400"
-          />
-          <button
-            type="submit"
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded font-medium transition"
-          >
-            Search
-          </button>
-          {isSearching && (
-            <button
-              type="button"
-              onClick={handleClearSearch}
-              className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded font-medium transition"
-            >
-              Clear
-            </button>
-          )}
-        </form>
-      </div>
-      {/* 🎬 Movie Grid */}
       <div className="px-4 py-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {movies.map(m => (
           <MovieCard key={m.id} movie={m} />
         ))}
       </div>
 
-      {/* 🌀 Loader / End Message */}
       <div ref={loaderRef} className="mt-6 text-center p-8 text-slate-500">
         {loading && <MovieGridSkeleton />}
-        {!loading && !hasMore && !isSearching && (
+        {!loading && !hasMore && !searchQuery && (
           <p className="text-slate-400">End of results.</p>
         )}
       </div>
