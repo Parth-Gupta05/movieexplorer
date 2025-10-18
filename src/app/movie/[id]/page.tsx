@@ -1,12 +1,13 @@
-// page.tsx
 import MoviePageClient from './MoviePageClient'
 
-type Params = {
-  params: { id: string }
+// ✅ Correct type for Next.js App Router dynamic routes
+interface MoviePageProps {
+  params: {
+    id: string
+  }
 }
 
-export default async function MoviePageWrapper({ params }: Params) {
-  // Await params (Next.js 14 requirement)
+export default function MoviePageWrapper({ params }: MoviePageProps) {
   const { id } = params
   return <MoviePageClient movieId={id} />
 }
