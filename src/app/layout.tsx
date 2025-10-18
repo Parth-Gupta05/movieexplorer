@@ -18,9 +18,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NextJs15-Dark-Light-Mode",
+  title: "Movie Explorer",
   description:
-    "Pure, dependency-free implementation of light/dark mode toggle in Next.js 15 with Tailwind CSS 4.1, featuring SSR-safe persistence and zero flicker.",
+    "Movie Explorer is a responsive web app to browse, search, and favorite movies from TMDB.",
 };
 
 export default function RootLayout({
