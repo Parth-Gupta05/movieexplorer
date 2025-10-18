@@ -1,13 +1,11 @@
-import MoviePageClient from './MoviePageClient'
+import MoviePageClient from "./MoviePageClient";
 
-// ✅ Correct type for Next.js App Router dynamic routes
+// ✅ Use Next.js built-in type for clarity
 interface MoviePageProps {
-  params: {
-    id: string
-  }
+  params: Promise<{ id: string }>; // 👈 Fix: Next.js 15 expects Promise here
 }
 
-export default function MoviePageWrapper({ params }: MoviePageProps) {
-  const { id } = params
-  return <MoviePageClient movieId={id} />
+export default async function MoviePageWrapper({ params }: MoviePageProps) {
+  const { id } = await params; // ✅ await the promise
+  return <MoviePageClient movieId={id} />;
 }
